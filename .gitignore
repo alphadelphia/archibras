@@ -1,0 +1,21 @@
+src/*.exe
+src/harmoniand
+src/build.h
+.*.swp
+*.*~*
+*.bak
+*.rej
+*.orig
+*.o
+*.patch
+.harmonian
+
+#mac specific
+.DS_Store
+build
+*.plist
+*.xcodeproj
+PortIndex*
+dist
+*.app
+*.dmg
