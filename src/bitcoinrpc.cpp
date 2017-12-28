@@ -2382,10 +2382,10 @@ Value getblock(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
-            "getblock <hash> [txinfo] [txdetails]\n"
+            "getblock <hash> [verbose] [txinfo]\n"
+            "verbose optional (default true) if false output raw hex.\n"
             "txinfo optional to print more detailed tx info\n"
-            "txdetails optional to print even more detailed tx info\n"
-            "Returns details of a block with given block-hash.");
+	    "Returns details of a block with given block-hash.");
 
     std::string strHash = params[0].get_str();
     uint256 hash(strHash);
@@ -2397,10 +2397,23 @@ Value getblock(const Array& params, bool fHelp)
     CBlockIndex* pblockindex = mapBlockIndex[hash];
     block.ReadFromDisk(pblockindex, true);
 
-    bool fTxInfo = params.size() > 1 ? params[1].get_bool() : false;
-    bool fTxDetails = params.size() > 2 ? params[2].get_bool() : false;
+    bool fTxinfo = false;
+    if (params.size() > 2)
+      fTxinfo = params[2].get_bool();
 
-    return blockToJSON(block, pblockindex, fTxInfo, fTxDetails);
+    bool fVerbose = true;
+    if (params.size() > 1)
+      fVerbose = params[1].get_bool();
+
+    if (!fVerbose)
+      {
+        CDataStream ssBlock(SER_NETWORK, PROTOCOL_VERSION);
+        ssBlock << block;
+	std::string strHex = HexStr(ssBlock.begin(), ssBlock.end());
+        return strHex;
+   }
+
+    return blockToJSON(block, pblockindex, fTxinfo, false);
 }
 
 
